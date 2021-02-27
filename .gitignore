@@ -13,6 +13,7 @@ build/
 dist/
 wheels/
 
+venv
 # pytorch/python/numpy formats
 *.pth
 *.pkl
