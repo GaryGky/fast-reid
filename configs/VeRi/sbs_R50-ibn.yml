@@ -6,7 +6,7 @@ INPUT:
 
 MODEL:
   BACKBONE:
-    WITH_IBN: True
+    WITH_IBN: True # 模型是否使用IBN module
 
 SOLVER:
   OPT: SGD

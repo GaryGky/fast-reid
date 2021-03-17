@@ -1,14 +1,14 @@
-_BASE_: Base-bagtricks.yml
+_BASE_: Base-bagtricks.yml # 上一级配置文件
 
 MODEL:
   BACKBONE:
-    WITH_NL: True
+    WITH_NL: True # 模型是否使用 NO-LOCAL module
 
   HEADS:
-    POOL_LAYER: gempool
+    POOL_LAYER: gempool # HEADS POOL_LAYER
 
   LOSSES:
-    NAME: ("CrossEntropyLoss", "TripletLoss")
+    NAME: ("CrossEntropyLoss", "TripletLoss") # LOSS FUNCTION
     CE:
       EPSILON: 0.1
       SCALE: 1.0

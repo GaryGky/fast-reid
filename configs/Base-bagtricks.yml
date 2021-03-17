@@ -3,12 +3,12 @@ MODEL:
 
   BACKBONE:
     NAME: build_resnet_backbone
-    NORM: BN
-    DEPTH: 50x
+    NORM: BN # 模型NORM
+    DEPTH: 50x # 模型深度
     LAST_STRIDE: 1
-    FEAT_DIM: 2048
+    FEAT_DIM: 2048 # 输出特征维度
     WITH_IBN: False
-    PRETRAIN: True
+    PRETRAIN: True # 可以设置模型的位置
 
   HEADS:
     NAME: EmbeddingHead
@@ -53,7 +53,7 @@ SOLVER:
   BIAS_LR_FACTOR: 2.
   WEIGHT_DECAY: 0.0005
   WEIGHT_DECAY_BIAS: 0.0005
-  IMS_PER_BATCH: 64
+  IMS_PER_BATCH: 64 # 设置每次训练的BATCHSIZE
 
   SCHED: MultiStepLR
   STEPS: [ 40, 90 ]

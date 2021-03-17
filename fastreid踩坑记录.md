@@ -6,7 +6,7 @@
 
 ```
 ./tools/train_net.py --config-file ./configs/VeRi/sbs_R50-ibn.yml MODEL.DEVICE "cuda:0"
-python tools/train_net.py --config-file ./configs/VeRi/sbs_R50-ibn.yml --num-gpus 4
+python tools/train_net.py --config-file ./configs/VeRi/sbs_R50-ibn.yml --num-gpus 1
 
 # eval
 python tools/train_net.py --config-file ./configs/VeRi/sbs_R50-ibn.yml --eval-only MODEL.WEIGHTS /path/to/checkpoint_file MODEL.DEVICE "cuda:0"
