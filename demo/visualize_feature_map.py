@@ -29,7 +29,7 @@ if __name__ == '__main__':
     model = build_resnet_backbone(cfg)
     # print(model.eval())
 
-    image = Image.open('demo/img/0002_c002_00030600_0.jpg')
+    image = Image.open('./img/yellow.jpg')
 
     transform = transforms.Compose([transforms.Resize((224, 224)),
                                     transforms.ToTensor(),

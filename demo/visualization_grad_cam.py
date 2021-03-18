@@ -23,7 +23,7 @@ if __name__ == '__main__':
     model = build_resnet_backbone(cfg)
     # print(model.eval())
 
-    image = Image.open('demo/img/0002_c002_00030600_0.jpg')
+    image = Image.open('demo/img/black.png')
 
     transform = transforms.Compose([transforms.Resize((224, 224)),
                                     transforms.ToTensor(),
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     pred.argmax(dim=1)  # prints tensor([2])
 
     # get the gradient of the output with respect to the parameters of the model
-    pred[:, 2].backward()
+    pred[:, 2].sum().backward()
 
     # pull the gradients out of the model
     gradients = model.get_gradient()
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     heatmap = heatmap.numpy()
 
     # interpolate the heatmap
-    img = cv2.imread('./img/data/1_506ySAThs6pItevFqZF-4g.jpeg')
+    img = cv2.imread('demo/img/black.png')
     heatmap = cv2.resize(heatmap, (img.shape[1], img.shape[0]))
     heatmap = np.uint8(255 * heatmap)
     heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)

@@ -6,6 +6,8 @@
 
 import logging
 import math
+import os
+import time
 
 import torch
 from torch import nn
@@ -19,6 +21,9 @@ from fastreid.layers import (
 from fastreid.utils.checkpoint import get_missing_parameters_message, get_unexpected_parameters_message
 from .build import BACKBONE_REGISTRY
 from fastreid.utils import comm
+import matplotlib.pyplot as plt
+import cv2
+import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -33,6 +38,32 @@ model_urls = {
     'ibn_101x': 'https://github.com/XingangPan/IBN-Net/releases/download/v1.0/resnet101_ibn_a-59ea0ac6.pth',
     'se_ibn_101x': 'https://github.com/XingangPan/IBN-Net/releases/download/v1.0/se_resnet101_ibn_a-fabed4e2.pth',
 }
+
+
+savepath=r'features_whitegirl'
+if not os.path.exists(savepath):
+    os.mkdir(savepath)
+
+def draw_features(width,height,x,savename):
+    tic=time.time()
+    fig = plt.figure(figsize=(16, 16))
+    fig.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95, wspace=0.05, hspace=0.05)
+    for i in range(width*height):
+        plt.subplot(height,width, i + 1)
+        plt.axis('off')
+        img = x[0, i, :, :]
+        pmin = np.min(img)
+        pmax = np.max(img)
+        img = ((img - pmin) / (pmax - pmin + 0.000001))*255  #float在[0，1]之间，转换成0-255
+        img=img.astype(np.uint8)  #转成unit8
+        img=cv2.applyColorMap(img, cv2.COLORMAP_JET) #生成heat map
+        img = img[:, :, ::-1]#注意cv2（BGR）和matplotlib(RGB)通道是相反的
+        plt.imshow(img)
+        print("{}/{}".format(i,width*height))
+    fig.savefig(savename, dpi=100)
+    fig.clf()
+    plt.close()
+    print("time:{}".format(time.time()-tic))
 
 
 class BasicBlock(nn.Module):
@@ -179,9 +210,16 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
+        draw_features(8, 8, x.cpu().numpy(), "{}/f1_conv1.png".format(savepath))
+
         x = self.bn1(x)
+        draw_features(8, 8, x.cpu().numpy(), "{}/f2_bn1.png".format(savepath))
+
         x = self.relu(x)
+        draw_features(8, 8, x.cpu().numpy(), "{}/f3_relu.png".format(savepath))
+
         x = self.maxpool(x)
+        draw_features(8, 8, x.cpu().numpy(), "{}/f4_maxpool.png".format(savepath))
 
         # layer 1
         NL1_counter = 0
@@ -193,6 +231,8 @@ class ResNet(nn.Module):
                 _, C, H, W = x.shape
                 x = self.NL_1[NL1_counter](x)
                 NL1_counter += 1
+        draw_features(16, 16, x.cpu().numpy(), "{}/f5_layer1.png".format(savepath))
+
         # layer 2
         NL2_counter = 0
         if len(self.NL_2_idx) == 0:
@@ -203,6 +243,7 @@ class ResNet(nn.Module):
                 _, C, H, W = x.shape
                 x = self.NL_2[NL2_counter](x)
                 NL2_counter += 1
+        draw_features(16, 32, x.cpu().numpy(), "{}/f6_layer2.png".format(savepath))
 
         # layer 3
         NL3_counter = 0
@@ -215,6 +256,9 @@ class ResNet(nn.Module):
                 x = self.NL_3[NL3_counter](x)
                 NL3_counter += 1
 
+        draw_features(32, 32, x.cpu().numpy(), "{}/f7_layer3.png".format(savepath))
+
+
         # layer 4
         NL4_counter = 0
         if len(self.NL_4_idx) == 0:
@@ -225,6 +269,13 @@ class ResNet(nn.Module):
                 _, C, H, W = x.shape
                 x = self.NL_4[NL4_counter](x)
                 NL4_counter += 1
+        draw_features(32, 32, x.cpu().numpy()[:, 0:1024, :, :], "{}/f8_layer4_1.png".format(savepath))
+        draw_features(32, 32, x.cpu().numpy()[:, 1024:2048, :, :], "{}/f8_layer4_2.png".format(savepath))
+
+        plt.plot(np.linspace(1, 1000, 1000), x.cpu().numpy()[0, :])
+        plt.savefig("{}/f10_fc.png".format(savepath))
+        plt.clf()
+        plt.close()
 
         return x
 
