@@ -169,8 +169,11 @@ class DefaultTrainer(TrainerBase):
     """
     A trainer with default training logic. Compared to `SimpleTrainer`, it
     contains the following logic in addition:
+    // 创建模型 优化 计划 数据加载
     1. Create model, optimizer, scheduler, dataloader from the given config.
+    // 加载预训练模型
     2. Load a checkpoint or `cfg.MODEL.WEIGHTS`, if exists.
+    //
     3. Register a few common hooks.
     It is created to simplify the **standard model training workflow** and reduce code boilerplate
     for users who only need the standard training workflow, with standard features.

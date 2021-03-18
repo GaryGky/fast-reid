@@ -106,6 +106,7 @@ class IterationTimer(HookBase):
         self._warmup_iter = warmup_iter
         self._step_timer = Timer()
 
+
     def before_train(self):
         self._start_time = time.perf_counter()
         self._total_timer = Timer()
