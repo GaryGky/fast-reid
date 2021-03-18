@@ -3,6 +3,7 @@ import unittest
 import torch
 
 import sys
+
 sys.path.append('.')
 from fastreid.config import cfg
 from fastreid.modeling.backbones import build_resnet_backbone
