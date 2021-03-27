@@ -210,16 +210,16 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        draw_features(8, 8, x.cpu().numpy(), "{}/f1_conv1.png".format(savepath))
+        draw_features(8, 8, x.cpu().detach().numpy(), "{}/f1_conv1.png".format(savepath))
 
         x = self.bn1(x)
-        draw_features(8, 8, x.cpu().numpy(), "{}/f2_bn1.png".format(savepath))
+        draw_features(8, 8, x.cpu().detach().numpy(), "{}/f2_bn1.png".format(savepath))
 
         x = self.relu(x)
-        draw_features(8, 8, x.cpu().numpy(), "{}/f3_relu.png".format(savepath))
+        draw_features(8, 8, x.cpu().detach().numpy(), "{}/f3_relu.png".format(savepath))
 
         x = self.maxpool(x)
-        draw_features(8, 8, x.cpu().numpy(), "{}/f4_maxpool.png".format(savepath))
+        draw_features(8, 8, x.cpu().detach().numpy(), "{}/f4_maxpool.png".format(savepath))
 
         # layer 1
         NL1_counter = 0
@@ -231,7 +231,7 @@ class ResNet(nn.Module):
                 _, C, H, W = x.shape
                 x = self.NL_1[NL1_counter](x)
                 NL1_counter += 1
-        draw_features(16, 16, x.cpu().numpy(), "{}/f5_layer1.png".format(savepath))
+        draw_features(16, 16, x.cpu().detach().numpy(), "{}/f5_layer1.png".format(savepath))
 
         # layer 2
         NL2_counter = 0
@@ -243,7 +243,7 @@ class ResNet(nn.Module):
                 _, C, H, W = x.shape
                 x = self.NL_2[NL2_counter](x)
                 NL2_counter += 1
-        draw_features(16, 32, x.cpu().numpy(), "{}/f6_layer2.png".format(savepath))
+        draw_features(16, 32, x.cpu().detach().numpy(), "{}/f6_layer2.png".format(savepath))
 
         # layer 3
         NL3_counter = 0
@@ -256,7 +256,7 @@ class ResNet(nn.Module):
                 x = self.NL_3[NL3_counter](x)
                 NL3_counter += 1
 
-        draw_features(32, 32, x.cpu().numpy(), "{}/f7_layer3.png".format(savepath))
+        draw_features(32, 32, x.cpu().detach().numpy(), "{}/f7_layer3.png".format(savepath))
 
 
         # layer 4
@@ -269,10 +269,10 @@ class ResNet(nn.Module):
                 _, C, H, W = x.shape
                 x = self.NL_4[NL4_counter](x)
                 NL4_counter += 1
-        draw_features(32, 32, x.cpu().numpy()[:, 0:1024, :, :], "{}/f8_layer4_1.png".format(savepath))
-        draw_features(32, 32, x.cpu().numpy()[:, 1024:2048, :, :], "{}/f8_layer4_2.png".format(savepath))
+        draw_features(32, 32, x.cpu().detach().numpy()[:, 0:1024, :, :], "{}/f8_layer4_1.png".format(savepath))
+        draw_features(32, 32, x.cpu().detach().numpy()[:, 1024:2048, :, :], "{}/f8_layer4_2.png".format(savepath))
 
-        plt.plot(np.linspace(1, 1000, 1000), x.cpu().numpy()[0, :])
+        plt.plot(np.linspace(1, 1000, 1000), x.cpu().detach().numpy()[0, :])
         plt.savefig("{}/f10_fc.png".format(savepath))
         plt.clf()
         plt.close()
