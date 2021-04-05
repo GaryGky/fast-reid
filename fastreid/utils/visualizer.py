@@ -186,7 +186,7 @@ class Visualizer:
             fig = plt.figure()
             plt.semilogx(np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), 'r', linestyle='--', label='Random guess')
         plt.semilogx(fpr, tpr, color=(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)),
-                     label='ROC curve with {}'.format(name))
+                     label='ROC FC-1024 with {}'.format(name))
         plt.title('Receiver Operating Characteristic')
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
@@ -203,8 +203,8 @@ class Visualizer:
                               label='positive with {}'.format(name))
         mu = np.mean(pos)
         sigma = np.std(pos)
-        y = norm.pdf(bins, mu, sigma)  # fitting curve
-        plt.plot(bins, y, color=pos_color)  # plot y curve
+        y = norm.pdf(bins, mu, sigma)  # fitting FC-1024
+        plt.plot(bins, y, color=pos_color)  # plot y FC-1024
 
         neg_color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1))
         n, bins, _ = plt.hist(neg, bins=80, alpha=0.5, density=True,
@@ -212,8 +212,8 @@ class Visualizer:
                               label='negative with {}'.format(name))
         mu = np.mean(neg)
         sigma = np.std(neg)
-        y = norm.pdf(bins, mu, sigma)  # fitting curve
-        plt.plot(bins, y, color=neg_color)  # plot y curve
+        y = norm.pdf(bins, mu, sigma)  # fitting FC-1024
+        plt.plot(bins, y, color=neg_color)  # plot y FC-1024
 
         plt.xticks(np.arange(0, 1.5, 0.1))
         plt.title('positive and negative pairs distribution')

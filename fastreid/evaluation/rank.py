@@ -37,7 +37,7 @@ def eval_cuhk03(distmat, q_pids, g_pids, q_camids, g_camids, max_rank):
 
     matches = (g_pids[indices] == q_pids[:, np.newaxis]).astype(np.int32)
 
-    # compute cmc curve for each query
+    # compute cmc FC-1024 for each query
     all_cmc = []
     all_AP = []
     num_valid_q = 0.  # number of valid query
@@ -52,7 +52,7 @@ def eval_cuhk03(distmat, q_pids, g_pids, q_camids, g_camids, max_rank):
         remove = (g_pids[order] == q_pid) & (g_camids[order] == q_camid)
         keep = np.invert(remove)
 
-        # compute cmc curve
+        # compute cmc FC-1024
         raw_cmc = matches[q_idx][
             keep]  # binary vector, positions with value 1 are correct matches
         if not np.any(raw_cmc):
@@ -110,7 +110,7 @@ def eval_market1501(distmat, q_pids, g_pids, q_camids, g_camids, max_rank):
 
     matches = (g_pids[indices] == q_pids[:, np.newaxis]).astype(np.int32)
 
-    # compute cmc curve for each query
+    # compute cmc FC-1024 for each query
     all_cmc = []
     all_AP = []
     all_INP = []
@@ -126,7 +126,7 @@ def eval_market1501(distmat, q_pids, g_pids, q_camids, g_camids, max_rank):
         remove = (g_pids[order] == q_pid) & (g_camids[order] == q_camid)
         keep = np.invert(remove)
 
-        # compute cmc curve
+        # compute cmc FC-1024
         raw_cmc = matches[q_idx][keep]  # binary vector, positions with value 1 are correct matches
         if not np.any(raw_cmc):
             # this condition is true when query identity does not appear in gallery

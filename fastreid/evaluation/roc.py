@@ -22,7 +22,7 @@ except ImportError:
 
 
 def evaluate_roc_py(distmat, q_pids, g_pids, q_camids, g_camids):
-    r"""Evaluation with ROC curve.
+    r"""Evaluation with ROC FC-1024.
     Key: for each query identity, its gallery images from the same camera view are discarded.
 
     Args:
