@@ -1,26 +1,21 @@
 import sys
 
-import torch
-
 sys.path.append('.')
+from fastreid.modeling.backbones import build_resnest_backbone
 
 from torchvision import transforms
 from fastreid.config import cfg
 from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
-import cv2
-
-from fastreid.modeling.backbones.resnet import build_resnet_backbone
 
 if __name__ == '__main__':
-    cfg.MODEL.BACKBONE.NAME = 'resnet18'
-    cfg.MODEL.BACKBONE.DEPTH = "18x"
+    cfg.MODEL.BACKBONE.NAME = 'resnest'
+    cfg.MODEL.BACKBONE.DEPTH = "50x"
     cfg.MODEL.BACKBONE.WITH_IBN = True
     cfg.MODEL.BACKBONE.WITH_SE = True
-    cfg.MODEL.BACKBONE.PRETRAIN_PATH = 'logs/veri/sbs_R50-ibn/model_best.pth'
+    cfg.MODEL.BACKBONE.PRETRAIN_PATH = 'logs/veri/resnest/sbs_Rs50-ibn/model_best.pth'
 
-    model = build_resnet_backbone(cfg)
+    model = build_resnest_backbone(cfg)
+    model.eval()
     # print(model.eval())
 
     image = Image.open('demo/img/orange.png')

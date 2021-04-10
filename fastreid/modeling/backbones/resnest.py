@@ -5,12 +5,19 @@
 
 import logging
 import math
+import time
 
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from torch import nn
 
-from fastreid.layers import SplAtConv2d, get_norm, DropBlock2D
-from fastreid.utils.checkpoint import get_unexpected_parameters_message, get_missing_parameters_message
+from fastreid.layers import SplAtConv2d, DropBlock2D
+from fastreid.layers import (
+    get_norm,
+)
+from fastreid.utils.checkpoint import get_missing_parameters_message, get_unexpected_parameters_message
 from .build import BACKBONE_REGISTRY
 
 logger = logging.getLogger(__name__)
@@ -22,6 +29,31 @@ _model_sha256 = {name: checksum for checksum, name in [
     ('75117900', 'resnest200'),
     ('0cc87c48', 'resnest269'),
 ]}
+
+
+def draw_features(width, height, x, savename):
+    tic = time.time()
+    fig = plt.figure(figsize=(16, 16))
+    fig.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95, wspace=0.05, hspace=0.05)
+    for i in range(width * height):
+        plt.subplot(height, width, i + 1)
+        plt.axis('off')
+        img = x[0, i, :, :]
+        pmin = np.min(img)
+        pmax = np.max(img)
+        img = ((img - pmin) / (pmax - pmin + 0.000001)) * 255  # float在[0，1]之间，转换成0-255
+        img = img.astype(np.uint8)  # 转成unit8
+        img = cv2.applyColorMap(img, cv2.COLORMAP_JET)  # 生成heat map
+        img = img[:, :, ::-1]  # 注意cv2（BGR）和matplotlib(RGB)通道是相反的
+        plt.imshow(img)
+        print("{}/{}".format(i, width * height))
+    fig.savefig(savename, dpi=100)
+    fig.clf()
+    plt.close()
+    print("time:{}".format(time.time() - tic))
+
+
+savepath = 'feature_rank_resnest'
 
 
 def short_hash(name):
@@ -229,6 +261,9 @@ class ResNeSt(nn.Module):
                                            dropblock_prob=dropblock_prob)
         self.drop = nn.Dropout(final_drop) if final_drop > 0.0 else None
 
+        self.layer5 = nn.AvgPool2d(kernel_size=3, stride=2, ceil_mode=True)
+        self.layer6 = nn.Linear(401408, 1024)
+
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
@@ -291,14 +326,36 @@ class ResNeSt(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
+
         x = self.bn1(x)
+
         x = self.relu(x)
+
         x = self.maxpool(x)
 
         x = self.layer1(x)
+
         x = self.layer2(x)
+
         x = self.layer3(x)
+
         x = self.layer4(x)
+
+        tmp = x
+
+        x = self.layer5(x)
+        plt.plot(np.linspace(1, 2048, 2048), x.detach().numpy()[0, :, 0, 0])
+        plt.savefig("{}/f9_avgpool.png".format(savepath))
+        plt.clf()
+        plt.close()
+
+        # 全连接网络
+        tmp = tmp.view(tmp.shape[0], -1)
+        tmp = self.layer6(tmp)
+        plt.plot(np.linspace(1, 1024, 1024), tmp.detach().numpy()[0, :])
+        plt.savefig("{}/f10_fc.png".format(savepath))
+        plt.clf()
+        plt.close()
 
         return x
 
@@ -312,11 +369,11 @@ def build_resnest_backbone(cfg):
     """
 
     # fmt: off
-    pretrain      = cfg.MODEL.BACKBONE.PRETRAIN
+    pretrain = cfg.MODEL.BACKBONE.PRETRAIN
     pretrain_path = cfg.MODEL.BACKBONE.PRETRAIN_PATH
-    last_stride   = cfg.MODEL.BACKBONE.LAST_STRIDE
-    bn_norm       = cfg.MODEL.BACKBONE.NORM
-    depth         = cfg.MODEL.BACKBONE.DEPTH
+    last_stride = cfg.MODEL.BACKBONE.LAST_STRIDE
+    bn_norm = cfg.MODEL.BACKBONE.NORM
+    depth = cfg.MODEL.BACKBONE.DEPTH
     # fmt: on
 
     num_blocks_per_stage = {
