@@ -11,8 +11,8 @@ sys.path.append('.')
 from fastreid.utils.visualizer import Visualizer
 
 if __name__ == "__main__":
-    baseline_res = Visualizer.load_roc_info("../logs/veri/roc_info.pickle")
-    mgn_res = Visualizer.load_roc_info("../logs/veri/roc_info.pickle")
+    baseline_res = Visualizer.load_roc_info("./logs/veri/resnest/roc_info.pickle")
+    mgn_res = Visualizer.load_roc_info("./logs/veri/resnest/roc_info.pickle")
 
     fig = Visualizer.plot_roc_curve(baseline_res['fpr'], baseline_res['tpr'], name='baseline')
     Visualizer.plot_roc_curve(mgn_res['fpr'], mgn_res['tpr'], name='mgn', fig=fig)
