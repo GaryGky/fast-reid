@@ -29,14 +29,14 @@ if __name__ == '__main__':
     model = build_resnet_backbone(cfg)
     # print(model.eval())
 
-    image = Image.open('./img/yellow.jpg')
+    image = Image.open('./demo/img/orange.png')
 
     transform = transforms.Compose([transforms.Resize((224, 224)),
                                     transforms.ToTensor(),
                                     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                          std=[0.229, 0.224, 0.225])])
     img = transform(image)
-    img = img.unsqueeze(0)
+    # img = img.unsqueeze(0)
 
     # f3 = model(img)
     # save_img(f3, 'layer1')
@@ -53,6 +53,6 @@ if __name__ == '__main__':
     # f6 = new_model(img)  # [1, 256, 14, 14]
     # save_img(f6, 'layer4')
 
-    new_model = nn.Sequential(*list(model.children())[:3])
-    f4 = new_model(img)  # [1, 128, 28, 28]
-    save_img(f4, 'layer1')
+    # new_model = nn.Sequential(*list(model.children())[:3])
+    # f4 = new_model(img)  # [1, 128, 28, 28]
+    # save_img(f4, 'layer1')
